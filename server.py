@@ -1,36 +1,38 @@
-from flask import Flask, render_template
-from flask_wtf import FlaskForm
-from wtforms import FileField, SubmitField
-from werkzeug.utils import secure_filename
+from flask import Flask, request, send_from_directory
+from flask_cors import CORS
 import os
-from wtforms.validators import InputRequired
+import pickle
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "supersecretkey"
-app.config["UPLOAD_FOLDER"] = "static/files"
+CORS(app)
+
+CORS(app, resources={r"/upload": {"origins": "http://localhost:3000"}})
+
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
 
 
-class UploadFileForm(FlaskForm):
-    file = FileField("File", validators=[InputRequired()])
-    submit = SubmitField("Upload File")
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return "No file part", 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return "No selected file", 400
+
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+    return "File uploaded successfully", 200
 
 
-@app.route("/", methods=["GET", "POST"])
-@app.route("/home", methods=["GET", "POST"])
-def home():
-    form = UploadFileForm()
-    if form.validate_on_submit():
-        file = form.file.data  # First grab the file
-        file.save(
-            os.path.join(
-                os.path.abspath(os.path.dirname(__file__)),
-                app.config["UPLOAD_FOLDER"],
-                secure_filename(file.filename),
-            )
-        )  # Then save the file
-        return "File has been uploaded."
-    return render_template("index.html", form=form)
+@app.route('/get_pdf/<filename>')
+def get_pdf(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
