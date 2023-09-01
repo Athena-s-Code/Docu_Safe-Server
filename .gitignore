@@ -1,0 +1,7 @@
+
+.idea/Docu_Safe Server.iml
+*.xml
+__pycache__/util_encryption.cpython-311.pyc
+.idea/Docu_Safe Server.iml
+__pycache__/util_highlight.cpython-311.pyc
+__pycache__/util_hygeine.cpython-311.pyc

@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 import json
 
-import util_classifier, util_encryption
+import util_classifier, util_encryption, util_hygeine, util_highlight
 
 app = Flask(__name__)
 CORS(app)
@@ -55,6 +55,19 @@ def decryption():
     response = jsonify({"decrypted": str(util_encryption.get_decrypted())})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
+
+@app.route("/hygeine")
+def hygeiner():
+    response = jsonify({"hygeine_txt": util_hygeine.data_hygeineer()})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
+@app.route("/highlight")
+def highlight():
+    util_highlight.data_highlight()
+    # send the pdf file that generated in the static/outputs
 
 
 if __name__ == "__main__":
