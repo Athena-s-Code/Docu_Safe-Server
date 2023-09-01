@@ -1,8 +1,9 @@
 from flask import Flask, request, send_from_directory, jsonify
 from flask_cors import CORS
 import os
+import json
 
-import util_classifier
+import util_classifier, util_encryption
 
 app = Flask(__name__)
 CORS(app)
@@ -35,13 +36,28 @@ def get_pdf(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 
-@app.route("/get_classifications")
+@app.route("/classify")
 def get_classifications():
-    response = jsonify({"classifications": util_classifier.get_confidentiality()})
+    response = jsonify({"classification": util_classifier.get_confidentiality()})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
+@app.route("/encrypt")
+def encryption():
+    response = jsonify({"encrypted": str(util_encryption.get_encrypted())})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
+@app.route("/decrypt")
+def decryption():
+    response = jsonify({"decrypted": str(util_encryption.get_decrypted())})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
 if __name__ == "__main__":
     util_classifier.load_saved_artifacts()
+    util_encryption.load_saved_artifacts()
     app.run(debug=True)
