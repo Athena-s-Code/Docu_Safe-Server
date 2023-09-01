@@ -1,3 +1,5 @@
+import glob
+
 import easyocr
 import PyPDF2
 import joblib
@@ -51,23 +53,24 @@ def get_confidentiality():
         prediction = __model.predict(features)
         return prediction[0]
 
-    file_path = "static/files/classification/Invoice_1304755949.pdf"
+    file_path_dir = r"static/files/classification/*.*"
 
-    if file_path.lower().endswith(".pdf"):
-        extracted_text = extract_text_from_pdf(file_path)
-        prediction = predict_confidentiality(extracted_text)
-    elif file_path.lower().endswith((".jpg", ".jpeg", ".png", ".bmp")):
-        extracted_text = extract_text_from_image(file_path)
-        print("Extracted Text:", extracted_text)
+    for file_path in glob.glob(file_path_dir, recursive=True):
+        if file_path.lower().endswith(".pdf"):
+            extracted_text = extract_text_from_pdf(file_path)
+            prediction = predict_confidentiality(extracted_text)
+        elif file_path.lower().endswith((".jpg", ".jpeg", ".png", ".bmp")):
+            extracted_text = extract_text_from_image(file_path)
+            print("Extracted Text:", extracted_text)
 
-        prediction = (
-            "Confidential" if contains_pii(extracted_text) else "Non-Confidential"
-        )
+            prediction = (
+                "Confidential" if contains_pii(extracted_text) else "Non-Confidential"
+            )
 
-    else:
-        raise ValueError("Unsupported file format")
+        else:
+            raise ValueError("Unsupported file format")
 
-    return prediction
+        return prediction
 
 
 def load_saved_artifacts():
