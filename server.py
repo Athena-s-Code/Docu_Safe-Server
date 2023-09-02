@@ -1,7 +1,7 @@
 from flask import Flask, request, send_from_directory, jsonify
 from flask_cors import CORS
 import os
-import json
+import re
 
 import util_classifier, util_encryption, util_hygeine, util_highlight, util_hide
 
@@ -15,6 +15,13 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
+
+
+# Preprocessing function
+def preprocess_text(text):
+    cleaned_text = text.lower()
+    cleaned_text = re.sub(r"[^\w\s]", "", cleaned_text)
+    return cleaned_text
 
 
 @app.route("/upload", methods=["POST"])
@@ -80,6 +87,6 @@ def hide():
 if __name__ == "__main__":
     util_classifier.load_saved_artifacts()
     util_encryption.load_saved_artifacts()
-    # util_hygeine.load_saved_artifacts()
+    util_hygeine.load_saved_artifacts()
     util_hide.load_saved_artifacts()
     app.run(debug=True)

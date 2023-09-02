@@ -11,15 +11,15 @@ __model = None
 __vectorizer = None
 
 
+def preprocess_text(text):
+    cleaned_text = text.lower()
+    cleaned_text = re.sub(r"[^\w\s]", "", cleaned_text)
+    return cleaned_text
+
+
 def data_hygeineer():
     # Initialize the easyocr reader
     reader = easyocr.Reader(lang_list=["en"])
-
-    # Preprocessing function
-    def preprocess_text(text):
-        cleaned_text = text.lower()
-        cleaned_text = re.sub(r"[^\w\s]", "", cleaned_text)
-        return cleaned_text
 
     # Dictionary to store preprocessed_text and their corresponding file paths
     file_path_mapping = defaultdict(list)

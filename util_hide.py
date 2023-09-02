@@ -145,6 +145,7 @@ def load_saved_artifacts():
     if __model is None:
         __model = RedactionModel(vocab_size, embedding_dim, hidden_dim)
         __model.load_state_dict(torch.load("models/Data Hidden/redaction_model.pth"))
+        print(type(__model))
 
     print("loading saved artifacts...done")
 
