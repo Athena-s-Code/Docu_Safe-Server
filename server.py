@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 import json
 
-import util_classifier, util_encryption, util_hygeine, util_highlight
+import util_classifier, util_encryption, util_hygeine, util_highlight, util_hide
 
 app = Flask(__name__)
 CORS(app)
@@ -70,7 +70,16 @@ def highlight():
     # send the pdf file that generated in the static/outputs
 
 
+@app.route("/hide")
+def hide():
+    response = jsonify({"redacted": util_hide.data_hide()})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+
 if __name__ == "__main__":
     util_classifier.load_saved_artifacts()
     util_encryption.load_saved_artifacts()
+    # util_hygeine.load_saved_artifacts()
+    util_hide.load_saved_artifacts()
     app.run(debug=True)
