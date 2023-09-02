@@ -75,14 +75,27 @@ def get_classifications():
     folder_path = app.config["FOLDER_CLASSIFICATION"]
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
 
-    file.save(os.path.join(app.config["FOLDER_CLASSIFICATION"], file.filename))
+    file_path = os.path.join(folder_path, file.filename)
+    file.save(file_path)
 
     response = jsonify(
         {"classification": util_classifier.get_confidentiality(), "status": "success"})
     response.headers.add("Access-Control-Allow-Origin", "*")
     print("classifications response:", response)
     return response
+
+
+def clean_directory(directory):
+    for item in os.listdir(directory):
+        item_path = os.path.join(directory, item)
+        if os.path.isdir(item_path):
+            shutil.rmtree(item_path)
+        else:
+            os.remove(item_path)
+
 
 # def upload_encryption_file():
 #     return upload_file_to_folder("FOLDER_CLASSIFICATION")
@@ -104,6 +117,8 @@ def encryption():
     folder_path = app.config["FOLDER_ENCRYPTION"]
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
 
     file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
 
@@ -136,6 +151,8 @@ def hygeiner():
     folder_path = app.config["FOLDER_HYGIENE"]
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
 
     file.save(os.path.join(app.config["FOLDER_HYGIENE"], file.filename))
 
@@ -161,8 +178,12 @@ def highlight():
     folder_path = app.config["FOLDER_HIGHLIGHT"]
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
 
     file.save(os.path.join(app.config["FOLDER_HIGHLIGHT"], file.filename))
+
+    clean_directory("static/outputs")
 
     util_highlight.data_highlight()
 
@@ -190,6 +211,8 @@ def hide():
     folder_path = app.config["FOLDER_HIDE"]
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
 
     file.save(os.path.join(app.config["FOLDER_HIDE"], file.filename))
 
