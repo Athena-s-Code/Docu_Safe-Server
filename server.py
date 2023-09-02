@@ -19,7 +19,7 @@ CORS(app, resources={
 FOLDER_CLASSIFICATION = "static/files/classification"
 FOLDER_ENCRYPTION = "static/files/encryption"
 FOLDER_HIGHLIGHT = "static/files/highlight"
-FOLDER_HYGIENE = "static/files/hygiene"
+FOLDER_HYGIENE = "static/files/hygeine"
 FOLDER_HIDE = "static/files/hide"
 FOLDER_OUTPUTS = "static/outputs"
 
