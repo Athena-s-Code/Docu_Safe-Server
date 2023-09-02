@@ -1,20 +1,55 @@
-from flask import Flask, request, send_from_directory, jsonify
+from flask import Flask, request, send_from_directory, jsonify, send_file
 from flask_cors import CORS
 import os
 import re
+import shutil
 
-import util_classifier, util_encryption, util_hygeine, util_highlight, util_hide
+import util_classifier
+import util_encryption
+import util_hygeine
+import util_highlight
+import util_hide
 
 app = Flask(__name__)
 CORS(app)
 
-CORS(app, resources={r"/upload": {"origins": "http://localhost:3000"}})
+CORS(app, resources={
+     r"*": {"origins": "https://deploy-preview-32--beautiful-pegasus-9a5f30.netlify.app"}})
 
-UPLOAD_FOLDER = "static/files/"
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+FOLDER_CLASSIFICATION = "static/files/classification"
+FOLDER_ENCRYPTION = "static/files/encryption"
+FOLDER_HIGHLIGHT = "static/files/highlight"
+FOLDER_HYGIENE = "static/files/hygiene"
+FOLDER_HIDE = "static/files/hide"
+FOLDER_OUTPUTS = "static/outputs"
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+# for folder in [FOLDER_CLASSIFICATION, FOLDER_ENCRYPTION, FOLDER_HIGHLIGHT, FOLDER_HYGIENE]:
+#     if not os.path.exists(folder):
+#         os.makedirs(folder)
+
+app.config["FOLDER_CLASSIFICATION"] = FOLDER_CLASSIFICATION
+app.config["FOLDER_ENCRYPTION"] = FOLDER_ENCRYPTION
+app.config["FOLDER_HIGHLIGHT"] = FOLDER_HIGHLIGHT
+app.config["FOLDER_HYGIENE"] = FOLDER_HYGIENE
+app.config["FOLDER_HIDE"] = FOLDER_HIDE
+app.config["FOLDER_OUTPUTS"] = FOLDER_OUTPUTS
+
+
+# def upload_file_to_folder(upload_folder_key):
+#     if "file" not in request.files:
+#         return "No file part", 400
+
+#     file = request.files["file"]
+
+#     if file.filename == "":
+#         return "No selected file", 400
+
+#     folder_path = app.config[upload_folder_key]
+#     if not os.path.exists(folder_path):
+#         os.makedirs(folder_path)
+
+#     file.save(os.path.join(app.config[upload_folder_key], file.filename))
+#     return "File uploaded successfully", 200
 
 
 # Preprocessing function
@@ -24,35 +59,56 @@ def preprocess_text(text):
     return cleaned_text
 
 
-@app.route("/upload", methods=["POST"])
-def upload_file():
+@app.route("/classification", methods=["POST"])
+def get_classifications():
     if "file" not in request.files:
         return "No file part", 400
 
     file = request.files["file"]
 
     if file.filename == "":
-        return "No selected file", 400
+        response = jsonify(
+            {"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
 
-    file.save(os.path.join(app.config["UPLOAD_FOLDER"], file.filename))
-    return "File uploaded successfully", 200
+    folder_path = app.config["FOLDER_CLASSIFICATION"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
 
+    file.save(os.path.join(app.config["FOLDER_CLASSIFICATION"], file.filename))
 
-@app.route("/get_pdf/<filename>")
-def get_pdf(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
-
-
-@app.route("/classify")
-def get_classifications():
-    response = jsonify({"classification": util_classifier.get_confidentiality()})
+    response = jsonify(
+        {"classification": util_classifier.get_confidentiality(), "status": "success"})
     response.headers.add("Access-Control-Allow-Origin", "*")
+    print("classifications response:", response)
     return response
 
+# def upload_encryption_file():
+#     return upload_file_to_folder("FOLDER_CLASSIFICATION")
 
-@app.route("/encrypt")
+
+@app.route("/encrypt", methods=["POST"])
 def encryption():
-    response = jsonify({"encrypted": str(util_encryption.get_encrypted())})
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify(
+            {"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_ENCRYPTION"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
+
+    response = jsonify(
+        {"encrypted": str(util_encryption.get_encrypted()), "status": "success"})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
@@ -64,22 +120,81 @@ def decryption():
     return response
 
 
-@app.route("/hygeine")
+@app.route("/hygeine", methods=["POST"])
 def hygeiner():
-    response = jsonify({"hygeine_txt": util_hygeine.data_hygeineer()})
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify(
+            {"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_HYGIENE"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_HYGIENE"], file.filename))
+
+    response = jsonify(
+        {"hygeine_txt": util_hygeine.data_hygeineer(), "status": "success"})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
-@app.route("/highlight")
+@app.route("/highlight", methods=["POST"])
 def highlight():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify(
+            {"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_HIGHLIGHT"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_HIGHLIGHT"], file.filename))
+
     util_highlight.data_highlight()
-    # send the pdf file that generated in the static/outputs
+
+    pdf_filename = "highlighted.pdf"
+    pdf_path = os.path.join("static/outputs", pdf_filename)
+
+    response = send_file(pdf_path, as_attachment=True,
+                         download_name=pdf_filename)
+    return response
 
 
-@app.route("/hide")
+@app.route("/hide", methods=["POST"])
 def hide():
-    response = jsonify({"redacted": util_hide.data_hide()})
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify(
+            {"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_HIDE"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_HIDE"], file.filename))
+
+    response = jsonify(
+        {"redacted": util_hide.data_hide(), "status": "success"})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
