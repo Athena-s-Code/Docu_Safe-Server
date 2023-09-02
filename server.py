@@ -23,9 +23,6 @@ FOLDER_HYGIENE = "static/files/hygiene"
 FOLDER_HIDE = "static/files/hide"
 FOLDER_OUTPUTS = "static/outputs"
 
-# for folder in [FOLDER_CLASSIFICATION, FOLDER_ENCRYPTION, FOLDER_HIGHLIGHT, FOLDER_HYGIENE]:
-#     if not os.path.exists(folder):
-#         os.makedirs(folder)
 
 app.config["FOLDER_CLASSIFICATION"] = FOLDER_CLASSIFICATION
 app.config["FOLDER_ENCRYPTION"] = FOLDER_ENCRYPTION
@@ -35,21 +32,13 @@ app.config["FOLDER_HIDE"] = FOLDER_HIDE
 app.config["FOLDER_OUTPUTS"] = FOLDER_OUTPUTS
 
 
-# def upload_file_to_folder(upload_folder_key):
-#     if "file" not in request.files:
-#         return "No file part", 400
-
-#     file = request.files["file"]
-
-#     if file.filename == "":
-#         return "No selected file", 400
-
-#     folder_path = app.config[upload_folder_key]
-#     if not os.path.exists(folder_path):
-#         os.makedirs(folder_path)
-
-#     file.save(os.path.join(app.config[upload_folder_key], file.filename))
-#     return "File uploaded successfully", 200
+def clean_directory(directory):
+    for item in os.listdir(directory):
+        item_path = os.path.join(directory, item)
+        if os.path.isdir(item_path):
+            shutil.rmtree(item_path)
+        else:
+            os.remove(item_path)
 
 
 # Preprocessing function
@@ -88,19 +77,6 @@ def get_classifications():
     return response
 
 
-def clean_directory(directory):
-    for item in os.listdir(directory):
-        item_path = os.path.join(directory, item)
-        if os.path.isdir(item_path):
-            shutil.rmtree(item_path)
-        else:
-            os.remove(item_path)
-
-
-# def upload_encryption_file():
-#     return upload_file_to_folder("FOLDER_CLASSIFICATION")
-
-
 @app.route("/encrypt", methods=["POST"])
 def encryption():
     if "file" not in request.files:
@@ -128,9 +104,29 @@ def encryption():
     return response
 
 
-@app.route("/decrypt")
+@app.route("/decrypt", methods=["POST"])
 def decryption():
-    response = jsonify({"decrypted": str(util_encryption.get_decrypted())})
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify(
+            {"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_ENCRYPTION"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
+
+    response = jsonify(
+        {"decrypted": str(util_encryption.get_decrypted()), "status": "success"})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
