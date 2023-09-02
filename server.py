@@ -133,10 +133,10 @@ def decryption():
 
 @app.route("/hygeine", methods=["POST"])
 def hygeiner():
-    if "files[]" not in request.files:
+    if "files" not in request.files:
         return "No file part", 400
 
-    files = request.files.getlist("files[]")
+    files = request.files.getlist("files")
 
     if not files:
         response = jsonify(
