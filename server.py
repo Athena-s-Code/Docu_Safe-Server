@@ -183,12 +183,16 @@ def highlight():
 
     file.save(os.path.join(app.config["FOLDER_HIGHLIGHT"], file.filename))
 
-    clean_directory("static/outputs")
+    output_folder_path = app.config["FOLDER_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
 
     util_highlight.data_highlight()
 
     pdf_filename = "highlighted.pdf"
-    pdf_path = os.path.join("static/outputs", pdf_filename)
+    pdf_path = os.path.join(app.config["FOLDER_OUTPUTS"], pdf_filename)
 
     response = send_file(pdf_path, as_attachment=True,
                          download_name=pdf_filename)
