@@ -133,14 +133,14 @@ def decryption():
 
 @app.route("/hygeine", methods=["POST"])
 def hygeiner():
-    if "file" not in request.files:
+    if "files[]" not in request.files:
         return "No file part", 400
 
-    file = request.files["file"]
+    files = request.files.getlist("files[]")
 
-    if file.filename == "":
+    if not files:
         response = jsonify(
-            {"message": "No selected file", "status": "fail"})
+            {"message": "No selected files", "status": "fail"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -150,7 +150,11 @@ def hygeiner():
     else:
         clean_directory(folder_path)
 
-    file.save(os.path.join(app.config["FOLDER_HYGIENE"], file.filename))
+    for file in files:
+        if file.filename == "":
+            continue  # Skip empty file fields
+
+        file.save(os.path.join(app.config["FOLDER_HYGIENE"], file.filename))
 
     response = jsonify(
         {"hygeine_txt": util_hygeine.data_hygeineer(), "status": "success"})

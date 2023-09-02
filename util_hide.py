@@ -41,7 +41,8 @@ class RedactionModel(nn.Module):
                     input_ids.device
                 ),
             )
-        decoder_output, _ = self.decoder(embedded_decoder_input, decoder_hidden)
+        decoder_output, _ = self.decoder(
+            embedded_decoder_input, decoder_hidden)
         output = self.output_layer(decoder_output)
         return output
 
@@ -69,7 +70,8 @@ def data_hide():
     with torch.no_grad():
         redacted_output = __model(input_ids, attention_mask)
         redacted_tokens = torch.argmax(redacted_output, dim=-1)
-        redacted_text = tokenizer.decode(redacted_tokens[0], skip_special_tokens=True)
+        redacted_text = tokenizer.decode(
+            redacted_tokens[0], skip_special_tokens=True)
 
     print("Redacted Text:", redacted_text)
 
@@ -89,7 +91,8 @@ def data_hide():
 
     # Replace redacted portions with placeholders
     redacted_tokens = torch.argmax(redacted_output, dim=-1)
-    redacted_text = tokenizer.decode(redacted_tokens[0], skip_special_tokens=True)
+    redacted_text = tokenizer.decode(
+        redacted_tokens[0], skip_special_tokens=True)
 
     for file_path in glob.glob(file_path_dir, recursive=True):
         # Get the original text from the PDF file
@@ -104,7 +107,8 @@ def data_hide():
         doc = nlp(text)
 
         # Define a set of entity labels to redact
-        pii_labels = {"PERSON", "GPE", "DATE", "PHONE", "EMAIL", "EmailAddress"}
+        pii_labels = {"PERSON", "GPE", "DATE",
+                      "PHONE", "EMAIL", "EmailAddress"}
 
         # Redact identified PII entities from the text
         redacted_text = text
@@ -144,7 +148,8 @@ def load_saved_artifacts():
     global __model
     if __model is None:
         __model = RedactionModel(vocab_size, embedding_dim, hidden_dim)
-        __model.load_state_dict(torch.load("models/Data Hidden/redaction_model.pth"))
+        __model.load_state_dict(torch.load(
+            "models/Data Hidden/redaction_model.pth"))
         print(type(__model))
 
     print("loading saved artifacts...done")
