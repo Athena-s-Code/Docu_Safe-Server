@@ -84,10 +84,20 @@ def get_classifications():
 
     file_path = os.path.join(folder_path, file.filename)
     file.save(file_path)
+    
+    output_folder_path = app.config["CLASSIFICATION_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
 
-    response = jsonify({"message": util_classifier.get_confidentiality()})
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    print("classifications response:", response)
+    util_classifier.get_confidentiality()
+
+    filename = "confidentiality.txt"
+    pdf_path = os.path.join(app.config["CLASSIFICATION_OUTPUTS"], filename)
+
+    response = send_file(pdf_path, as_attachment=True,
+                         download_name=filename)
     return response
 
 
