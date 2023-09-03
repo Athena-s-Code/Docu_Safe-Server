@@ -176,8 +176,18 @@ def hygeiner():
 
         file.save(os.path.join(app.config["FOLDER_HYGIENE"], file.filename))
 
-    response = jsonify({"message": util_hygeine.data_hygeineer()})
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    output_folder_path = app.config["HYGIENE_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    util_hygeine.data_hygeineer()
+
+    pdf_filename = "duplicate_pii_data.txt"
+    pdf_path = os.path.join(app.config["HYGIENE_OUTPUTS"], pdf_filename)
+
+    response = send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
     return response
 
 
