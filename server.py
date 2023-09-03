@@ -27,7 +27,12 @@ FOLDER_ENCRYPTION = "static/files/encryption"
 FOLDER_HIGHLIGHT = "static/files/highlight"
 FOLDER_HYGIENE = "static/files/hygeine"
 FOLDER_HIDE = "static/files/hide"
-FOLDER_OUTPUTS = "static/outputs"
+CLASSIFICATION_OUTPUTS = "static/outputs/classification"
+ENCRYPTION_OUTPUTS = "static/outputs/encryption"
+HIGHLIGHT_OUTPUTS = "static/outputs/highlights"
+HYGIENE_OUTPUTS = "static/outputs/hygeine"
+HIDE_OUTPUTS = "static/outputs/hide"
+DECRYPTION_OUTPUTS = "static/outputs/decryption"
 
 
 app.config["FOLDER_CLASSIFICATION"] = FOLDER_CLASSIFICATION
@@ -35,7 +40,12 @@ app.config["FOLDER_ENCRYPTION"] = FOLDER_ENCRYPTION
 app.config["FOLDER_HIGHLIGHT"] = FOLDER_HIGHLIGHT
 app.config["FOLDER_HYGIENE"] = FOLDER_HYGIENE
 app.config["FOLDER_HIDE"] = FOLDER_HIDE
-app.config["FOLDER_OUTPUTS"] = FOLDER_OUTPUTS
+app.config["CLASSIFICATION_OUTPUTS"] = CLASSIFICATION_OUTPUTS
+app.config["ENCRYPTION_OUTPUTS"] = ENCRYPTION_OUTPUTS
+app.config["HIGHLIGHT_OUTPUTS"] = HIGHLIGHT_OUTPUTS
+app.config["HYGIENE_OUTPUTS"] = HYGIENE_OUTPUTS
+app.config["HIDE_OUTPUTS"] = HIDE_OUTPUTS
+app.config["DECRYPTION_OUTPUTS"] = DECRYPTION_OUTPUTS
 
 
 def clean_directory(directory):
@@ -101,8 +111,19 @@ def encryption():
 
     file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
 
-    response = jsonify({"message": util_encryption.get_encrypted()})
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    output_folder_path = app.config["ENCRYPTION_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    util_encryption.get_encrypted()
+
+    filename = "encrypted_values.txt"
+    pdf_path = os.path.join(app.config["ENCRYPTION_OUTPUTS"], filename)
+
+    response = send_file(pdf_path, as_attachment=True,
+                         download_name=filename)
     return response
 
 
