@@ -17,7 +17,7 @@ CORS(
     app,
     resources={
         r"*": {
-            "origins": "https://deploy-preview-32--beautiful-pegasus-9a5f30.netlify.app"
+            "origins": "http://localhost:3000"
         }
     },
 )
