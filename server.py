@@ -235,10 +235,22 @@ def hide():
         clean_directory(folder_path)
 
     file.save(os.path.join(app.config["FOLDER_HIDE"], file.filename))
+    
+    output_folder_path = app.config["HIDE_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+        
+    util_hide.data_hide()
 
-    response = jsonify({"message": util_hide.data_hide()})
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    filename = "non_redacted_text.txt"
+    pdf_path = os.path.join(app.config["HIDE_OUTPUTS"], filename)
+
+    response = send_file(pdf_path, as_attachment=True,
+                         download_name=filename)
     return response
+
 
 
 if __name__ == "__main__":
