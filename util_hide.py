@@ -41,8 +41,7 @@ class RedactionModel(nn.Module):
                     input_ids.device
                 ),
             )
-        decoder_output, _ = self.decoder(
-            embedded_decoder_input, decoder_hidden)
+        decoder_output, _ = self.decoder(embedded_decoder_input, decoder_hidden)
         output = self.output_layer(decoder_output)
         return output
 
@@ -70,29 +69,32 @@ def data_hide():
     with torch.no_grad():
         redacted_output = __model(input_ids, attention_mask)
         redacted_tokens = torch.argmax(redacted_output, dim=-1)
-        redacted_text = tokenizer.decode(
-            redacted_tokens[0], skip_special_tokens=True)
+        redacted_text = tokenizer.decode(redacted_tokens[0], skip_special_tokens=True)
 
     print("Redacted Text:", redacted_text)
 
-    # Load text from PDF or image file
-    def load_text_from_file(file_path):
-        if file_path.endswith(".pdf"):
-            with pdfplumber.open(file_path) as pdf:
-                text = ""
-                for page in pdf.pages:
-                    text += page.extract_text()
-        elif file_path.endswith((".jpg", ".jpeg", ".png", ".bmp")):
-            image = Image.open(file_path)
-            text = pytesseract.image_to_string(image)
-        else:
-            raise ValueError("Unsupported file format")
-        return text
+    # Or save the redacted text to a file
+    with open("static/outputs/hide/redacted_output.txt", "w") as f:
+        f.write(redacted_text)
+
+    for file_path in glob.glob(file_path_dir, recursive=True):
+        # Load text from PDF or image file
+        def load_text_from_file(file_path):
+            if file_path.endswith(".pdf"):
+                with pdfplumber.open(file_path) as pdf:
+                    text = ""
+                    for page in pdf.pages:
+                        text += page.extract_text()
+            elif file_path.endswith((".jpg", ".jpeg", ".png", ".bmp")):
+                image = Image.open(file_path)
+                text = pytesseract.image_to_string(image)
+            else:
+                raise ValueError("Unsupported file format")
+            return text
 
     # Replace redacted portions with placeholders
     redacted_tokens = torch.argmax(redacted_output, dim=-1)
-    redacted_text = tokenizer.decode(
-        redacted_tokens[0], skip_special_tokens=True)
+    redacted_text = tokenizer.decode(redacted_tokens[0], skip_special_tokens=True)
 
     for file_path in glob.glob(file_path_dir, recursive=True):
         # Get the original text from the PDF file
@@ -107,8 +109,7 @@ def data_hide():
         doc = nlp(text)
 
         # Define a set of entity labels to redact
-        pii_labels = {"PERSON", "GPE", "DATE",
-                      "PHONE", "EMAIL", "EmailAddress"}
+        pii_labels = {"PERSON", "GPE", "DATE", "PHONE", "EMAIL", "EmailAddress"}
 
         # Redact identified PII entities from the text
         redacted_text = text
@@ -139,7 +140,12 @@ def data_hide():
     for file_path in glob.glob(file_path_dir, recursive=True):
         redacted_text = process_file(file_path)
 
-    return redacted_text
+    # Save the redacted text to a new file
+    output_file_path = "static/outputs/hide/non_redacted_text.txt"
+    with open(output_file_path, "w", encoding="utf-8") as f:
+        f.write(redacted_text)
+
+    return f"Redacted text saved to: {output_file_path}"
 
 
 def load_saved_artifacts():
@@ -148,8 +154,7 @@ def load_saved_artifacts():
     global __model
     if __model is None:
         __model = RedactionModel(vocab_size, embedding_dim, hidden_dim)
-        __model.load_state_dict(torch.load(
-            "models/Data Hidden/redaction_model.pth"))
+        __model.load_state_dict(torch.load("models/Data Hidden/redaction_model.pth"))
         print(type(__model))
 
     print("loading saved artifacts...done")

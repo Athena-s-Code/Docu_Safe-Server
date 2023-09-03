@@ -96,15 +96,15 @@ def data_highlight():
                                         highlight.set_colors({"fill": (1, 0, 1)})
 
                     # Save the modified PDF file
-                    output_file = "static/outputs/highlighted.pdf"
+                    output_file = "static/outputs/highlights/highlighted.pdf"
                     doc.save(output_file)
                     doc.close()
 
-                    print("Highlighted PDF file created:", output_file)
+                    return "Highlighted PDF file created:", output_file
                 else:
-                    print("No PII keywords detected.")
+                    return "No PII keywords detected."
             else:
-                print("Error: Unable to extract text from the PDF.")
+                return "Error: Unable to extract text from the PDF."
 
         elif file_path.lower().endswith((".jpg", ".jpeg", ".png", ".bmp")):
             # Image handling logic
@@ -116,7 +116,7 @@ def data_highlight():
                     print("Potential Personally Identifiable Information found.")
 
                     # Create a PDF document
-                    output_pdf_path = "static/outputs/highlighted.pdf"
+                    output_pdf_path = "static/outputs/highlights/highlighted_text.pdf"
                     doc = SimpleDocTemplate(output_pdf_path, pagesize=letter)
                     styles = getSampleStyleSheet()
 
@@ -134,14 +134,14 @@ def data_highlight():
 
                     doc.build(paragraphs)
 
-                    print("Modified PDF file created:", output_pdf_path)
+                    return "Modified PDF file created:", output_pdf_path
                 else:
-                    print("No PII keywords detected in the image.")
+                    return "No PII keywords detected in the image."
             else:
-                print("Error: Unable to extract text from the image.")
+                return "Error: Unable to extract text from the image."
         else:
-            print("Unsupported file format.")
+            return "Unsupported file format."
 
 
 if __name__ == "__main__":
-    data_highlight()
+    print(data_highlight())

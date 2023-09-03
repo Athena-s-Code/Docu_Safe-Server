@@ -13,8 +13,14 @@ import util_hide
 app = Flask(__name__)
 CORS(app)
 
-CORS(app, resources={
-     r"*": {"origins": "https://deploy-preview-32--beautiful-pegasus-9a5f30.netlify.app"}})
+CORS(
+    app,
+    resources={
+        r"*": {
+            "origins": "https://deploy-preview-32--beautiful-pegasus-9a5f30.netlify.app"
+        }
+    },
+)
 
 FOLDER_CLASSIFICATION = "static/files/classification"
 FOLDER_ENCRYPTION = "static/files/encryption"
@@ -56,8 +62,7 @@ def get_classifications():
     file = request.files["file"]
 
     if file.filename == "":
-        response = jsonify(
-            {"message": "No selected file", "status": "fail"})
+        response = jsonify({"message": "No selected file", "status": "fail"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -70,8 +75,7 @@ def get_classifications():
     file_path = os.path.join(folder_path, file.filename)
     file.save(file_path)
 
-    response = jsonify(
-        {"classification": util_classifier.get_confidentiality(), "status": "success"})
+    response = jsonify({"message": util_classifier.get_confidentiality()})
     response.headers.add("Access-Control-Allow-Origin", "*")
     print("classifications response:", response)
     return response
@@ -85,8 +89,7 @@ def encryption():
     file = request.files["file"]
 
     if file.filename == "":
-        response = jsonify(
-            {"message": "No selected file", "status": "fail"})
+        response = jsonify({"message": "No selected file", "status": "fail"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -98,8 +101,7 @@ def encryption():
 
     file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
 
-    response = jsonify(
-        {"encrypted": str(util_encryption.get_encrypted()), "status": "success"})
+    response = jsonify({"message": util_encryption.get_encrypted()})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
@@ -112,8 +114,7 @@ def decryption():
     file = request.files["file"]
 
     if file.filename == "":
-        response = jsonify(
-            {"message": "No selected file", "status": "fail"})
+        response = jsonify({"message": "No selected file", "status": "fail"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -125,8 +126,7 @@ def decryption():
 
     file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
 
-    response = jsonify(
-        {"decrypted": str(util_encryption.get_decrypted()), "status": "success"})
+    response = jsonify({"message": util_encryption.get_decrypted()})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
@@ -139,8 +139,7 @@ def hygeiner():
     files = request.files.getlist("files")
 
     if not files:
-        response = jsonify(
-            {"message": "No selected files", "status": "fail"})
+        response = jsonify({"message": "No selected files", "status": "fail"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -156,8 +155,7 @@ def hygeiner():
 
         file.save(os.path.join(app.config["FOLDER_HYGIENE"], file.filename))
 
-    response = jsonify(
-        {"hygeine_txt": util_hygeine.data_hygeineer(), "status": "success"})
+    response = jsonify({"message": util_hygeine.data_hygeineer()})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
@@ -170,8 +168,7 @@ def highlight():
     file = request.files["file"]
 
     if file.filename == "":
-        response = jsonify(
-            {"message": "No selected file", "status": "fail"})
+        response = jsonify({"message": "No selected file", "status": "fail"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -194,8 +191,7 @@ def highlight():
     pdf_filename = "highlighted.pdf"
     pdf_path = os.path.join(app.config["FOLDER_OUTPUTS"], pdf_filename)
 
-    response = send_file(pdf_path, as_attachment=True,
-                         download_name=pdf_filename)
+    response = send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
     return response
 
 
@@ -207,8 +203,7 @@ def hide():
     file = request.files["file"]
 
     if file.filename == "":
-        response = jsonify(
-            {"message": "No selected file", "status": "fail"})
+        response = jsonify({"message": "No selected file", "status": "fail"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -220,8 +215,7 @@ def hide():
 
     file.save(os.path.join(app.config["FOLDER_HIDE"], file.filename))
 
-    response = jsonify(
-        {"redacted": util_hide.data_hide(), "status": "success"})
+    response = jsonify({"message": util_hide.data_hide()})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 

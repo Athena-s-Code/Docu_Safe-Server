@@ -70,7 +70,13 @@ def get_confidentiality():
         else:
             raise ValueError("Unsupported file format")
 
-        return prediction
+        # Save modified text file
+        output_filename = "static/outputs/classification/confidentiality.txt"
+        with open(output_filename, "w", encoding="utf-8") as output_file:
+            output_file.write(f"Confidentiality: {prediction}\n\n")
+            output_file.write(extracted_text)
+
+        return f"Modified text file saved as '{output_filename}'"
 
 
 def load_saved_artifacts():

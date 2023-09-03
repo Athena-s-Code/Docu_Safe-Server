@@ -108,9 +108,9 @@ def get_encrypted():
             if f'<font color="red">[{pii_type}]</font>' in line:
                 highlighted_values.append(line)
 
-    # print("Highlighted PII values:")
-    # for value in highlighted_values:
-    #     print(value)
+    print("Highlighted PII values:")
+    for value in highlighted_values:
+        print(value)
 
     # Encrypt and print the values
     encrypted_values = {}
@@ -135,10 +135,25 @@ def get_encrypted():
         value = value[:encrypted_text_start] + encrypted_value
         # print(value)
 
-    return encrypted_values
+    # Save as a file
+    output_txt_path = "static/outputs/encryption/encrypted_values.txt"
+    with open(output_txt_path, "w", encoding="utf-8") as txt_file:
+        for pii_type, encrypted_text in encrypted_values.items():
+            txt_file.write(f"{pii_type}: {encrypted_text}\n")
+
+    return f"All encrypted values saved to {output_txt_path}"
 
 
 def get_decrypted():
+    pdf_path_dir = r"static/files/encryption/*.pdf"
+
+    for pdf_path in glob.glob(pdf_path_dir, recursive=True):
+        with open(pdf_path, "rb") as pdf:
+            pdf_reader = PyPDF2.PdfReader(pdf)
+            global text_content
+            for page in pdf_reader.pages:
+                text_content += page.extract_text()
+
     # Detect PII values and save to a file
     detected_pii_values = []
 
@@ -146,7 +161,14 @@ def get_decrypted():
         for pattern, pii_type in pii_patterns.items():
             if re.search(pattern, line):
                 detected_pii_values.append(f"{pii_type}: {line.strip()}")
-    return detected_pii_values
+
+    # Save detected PII values to a file
+    decrypted_pii_output_path = "static/outputs/decryption/decrypted_pii_values.txt"
+    with open(decrypted_pii_output_path, "w", encoding="utf-8") as txt_file:
+        for detected_pii_value in detected_pii_values:
+            txt_file.write(f"{detected_pii_value}\n")
+
+    return f"All detected PII values saved to {decrypted_pii_output_path}"
 
 
 def load_saved_artifacts():
