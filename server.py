@@ -156,10 +156,22 @@ def decryption():
         clean_directory(folder_path)
 
     file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
+    
+    output_folder_path = app.config["DECRYPTION_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
 
-    response = jsonify({"message": util_encryption.get_decrypted()})
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    util_encryption.get_decrypted()
+
+    filename = "decrypted_pii_values.txt"
+    pdf_path = os.path.join(app.config["DECRYPTION_OUTPUTS"], filename)
+
+    response = send_file(pdf_path, as_attachment=True,
+                         download_name=filename)
     return response
+
 
 
 @app.route("/hygeine", methods=["POST"])
