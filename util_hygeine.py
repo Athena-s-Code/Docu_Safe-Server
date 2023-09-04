@@ -69,7 +69,7 @@ def data_hygeineer():
 
     if not output_text:
         output_text = "No Dulpicated PII Data detected."
-        return "No Dulpicated PII Data detected."
+        print("No Dulpicated PII Data detected.")
 
     # Save the text content to a TXT file
     output_file_path = "static/outputs/hygeine/duplicate_pii_data.txt"
