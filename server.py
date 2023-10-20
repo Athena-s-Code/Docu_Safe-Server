@@ -15,11 +15,7 @@ CORS(app)
 
 CORS(
     app,
-    resources={
-        r"*": {
-            "origins": "http://localhost:3000"
-        }
-    },
+    resources={r"*": {"origins": "http://localhost:3000"}},
 )
 
 FOLDER_CLASSIFICATION = "static/files/classification"
@@ -84,7 +80,7 @@ def get_classifications():
 
     file_path = os.path.join(folder_path, file.filename)
     file.save(file_path)
-    
+
     output_folder_path = app.config["CLASSIFICATION_OUTPUTS"]
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
@@ -96,8 +92,7 @@ def get_classifications():
     filename = "confidentiality.txt"
     pdf_path = os.path.join(app.config["CLASSIFICATION_OUTPUTS"], filename)
 
-    response = send_file(pdf_path, as_attachment=True,
-                         download_name=filename)
+    response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
 
 
@@ -132,8 +127,7 @@ def encryption():
     filename = "encrypted_values.txt"
     pdf_path = os.path.join(app.config["ENCRYPTION_OUTPUTS"], filename)
 
-    response = send_file(pdf_path, as_attachment=True,
-                         download_name=filename)
+    response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
 
 
@@ -156,7 +150,7 @@ def decryption():
         clean_directory(folder_path)
 
     file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
-    
+
     output_folder_path = app.config["DECRYPTION_OUTPUTS"]
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
@@ -168,10 +162,8 @@ def decryption():
     filename = "decrypted_pii_values.txt"
     pdf_path = os.path.join(app.config["DECRYPTION_OUTPUTS"], filename)
 
-    response = send_file(pdf_path, as_attachment=True,
-                         download_name=filename)
+    response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
-
 
 
 @app.route("/hygeine", methods=["POST"])
@@ -267,22 +259,20 @@ def hide():
         clean_directory(folder_path)
 
     file.save(os.path.join(app.config["FOLDER_HIDE"], file.filename))
-    
+
     output_folder_path = app.config["HIDE_OUTPUTS"]
     if not os.path.exists(output_folder_path):
         os.makedirs(output_folder_path)
     else:
         clean_directory(output_folder_path)
-        
+
     util_hide.data_hide()
 
     filename = "non_redacted_text.txt"
     pdf_path = os.path.join(app.config["HIDE_OUTPUTS"], filename)
 
-    response = send_file(pdf_path, as_attachment=True,
-                         download_name=filename)
+    response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
-
 
 
 if __name__ == "__main__":
