@@ -9,6 +9,8 @@ import util_encryption
 import util_hygeine
 import util_highlight
 import util_hide
+import util_data_validatior
+import util_title_predictor
 
 app = Flask(__name__)
 CORS(app)
@@ -95,6 +97,40 @@ def get_classifications():
     response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
 
+@app.route("/predictor", methods=["POST"])
+def title_predictor():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify({"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_CLASSIFICATION"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+
+    file_path = os.path.join(folder_path, file.filename)
+    file.save(file_path)
+
+    output_folder_path = app.config["CLASSIFICATION_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    util_title_predictor.get_job_title()
+
+    filename = "predicted_job_titles.xlsx"
+    pdf_path = os.path.join(app.config["CLASSIFICATION_OUTPUTS"], filename)
+
+    response = send_file(pdf_path, as_attachment=True, download_name=filename)
+    return response
 
 @app.route("/encrypt", methods=["POST"])
 def encryption():
@@ -274,10 +310,46 @@ def hide():
     response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
 
+@app.route("/validator", methods=["POST"])
+def validator():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify({"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_HYGIENE"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_HYGIENE"], file.filename))
+
+    output_folder_path = app.config["HYGIENE_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    util_data_validatior.get_validator()
+
+    filename = "data_validation.xlsx"
+    pdf_path = os.path.join(app.config["HYGIENE_OUTPUTS"], filename)
+
+    response = send_file(pdf_path, as_attachment=True, download_name=filename)
+    return response
+
 
 if __name__ == "__main__":
     util_classifier.load_saved_artifacts()
     util_encryption.load_saved_artifacts()
     util_hygeine.load_saved_artifacts()
     util_hide.load_saved_artifacts()
+    util_title_predictor.load_saved_artifacts()
+    util_data_validatior.load_saved_artifacts()
     app.run(debug=True)

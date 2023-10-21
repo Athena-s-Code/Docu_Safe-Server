@@ -116,7 +116,7 @@ def data_highlight():
                     print("Potential Personally Identifiable Information found.")
 
                     # Create a PDF document
-                    output_pdf_path = "static/outputs/highlights/highlighted_text.pdf"
+                    output_pdf_path = "static/outputs/highlights/highlighted.pdf"
                     doc = SimpleDocTemplate(output_pdf_path, pagesize=letter)
                     styles = getSampleStyleSheet()
 
