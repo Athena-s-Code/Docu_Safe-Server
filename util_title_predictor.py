@@ -4,6 +4,7 @@ import re
 import nltk
 from PyPDF2 import PdfReader
 import joblib
+from json import loads, dumps
 
 __model = None
 __vectorizer = None
@@ -57,7 +58,11 @@ def get_job_title():
     # Save the results to an Excel file
     results_df.to_excel(excel_file_path, index=False)
 
+    result = results_df.to_json(orient="records")
+
     print(f"Results saved to {excel_file_path}")
+
+    return result
 
 
 def load_saved_artifacts():

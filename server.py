@@ -132,6 +132,30 @@ def title_predictor():
     response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
 
+@app.route("/get_job_title", methods=["GET", "POST"])
+def job_title_getter():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify({"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_CLASSIFICATION"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+    
+    file_path = os.path.join(folder_path, file.filename)
+    file.save(file_path)
+
+    response = util_title_predictor.get_job_title()
+
+    return response
 @app.route("/encrypt", methods=["POST"])
 def encryption():
     if "file" not in request.files:
