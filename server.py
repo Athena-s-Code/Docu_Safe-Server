@@ -101,13 +101,13 @@ def get_classifications():
 
 @app.route("/job_title_predict", methods=["POST"])
 def job_title_predict():
-    if "file" not in request.files:
+    if "files" not in request.files:
         return "No file part", 400
 
-    file = request.files["file"]
+    files = request.files.getlist("files")
 
-    if file.filename == "":
-        response = jsonify({"message": "No selected file", "status": "fail"})
+    if not files:
+        response = jsonify({"message": "No selected files", "status": "fail"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -117,8 +117,11 @@ def job_title_predict():
     else:
         clean_directory(folder_path)
 
-    file_path = os.path.join(folder_path, file.filename)
-    file.save(file_path)
+    for file in files:
+        if file.filename == "":
+            continue  # Skip empty file fields
+
+        file.save(os.path.join(folder_path, file.filename))
 
     output_folder_path = app.config["CLASSIFICATION_OUTPUTS"]
     if not os.path.exists(output_folder_path):
@@ -314,13 +317,13 @@ def hide():
 
 @app.route("/validate", methods=["POST"])
 def validate():
-    if "file" not in request.files:
+    if "files" not in request.files:
         return "No file part", 400
 
-    file = request.files["file"]
+    files = request.files.getlist("files")
 
-    if file.filename == "":
-        response = jsonify({"message": "No selected file", "status": "fail"})
+    if not files:
+        response = jsonify({"message": "No selected files", "status": "fail"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -330,7 +333,11 @@ def validate():
     else:
         clean_directory(folder_path)
 
-    file.save(os.path.join(app.config["FOLDER_HYGIENE"], file.filename))
+    for file in files:
+        if file.filename == "":
+            continue  # Skip empty file fields
+
+        file.save(os.path.join(app.config["FOLDER_HYGIENE"], file.filename))
 
     output_folder_path = app.config["HYGIENE_OUTPUTS"]
     if not os.path.exists(output_folder_path):
@@ -340,7 +347,13 @@ def validate():
 
     util_data_validatior.get_validator()
 
-    response = jsonify({"message": "Valiation Successful", "status": "success"})
+    filename = "data_validation.txt"
+    pdf_path = os.path.join(app.config["HYGIENE_OUTPUTS"], filename)
+
+    response = jsonify({
+        "message": "Valiation Successful",
+        "filepath": pdf_path,
+        "status": "success"})
     response.headers.add("Access-Control-Allow-Origin", "*")
 
     return response
@@ -351,7 +364,6 @@ def get_validation():
     pdf_path = os.path.join(app.config["HYGIENE_OUTPUTS"], filename)
 
     response = send_file(pdf_path, as_attachment=True, download_name=filename)
-
     return response
 
 @app.route("/highlight_payment", methods=["POST"])
