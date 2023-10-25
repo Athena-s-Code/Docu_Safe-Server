@@ -87,11 +87,10 @@ def get_validator():
         # Create a DataFrame from the results
         results_df = pd.DataFrame(results)
 
-        # Save the text content
-        output_file_path = f"static/outputs/hygeine/data_validation.xlsx"
+        # Save the text
+        output_file_path = f"static/outputs/hygeine/data_validation.txt"
 
-        # Save the results to an Excel file
-        results_df.to_excel(output_file_path, index=False)
+        results_df.to_csv(output_file_path, index=False)
 
         return f"Data validation details saved as {output_file_path}"
 

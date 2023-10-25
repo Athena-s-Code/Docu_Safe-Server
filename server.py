@@ -11,6 +11,8 @@ import util_highlight
 import util_hide
 import util_data_validatior
 import util_title_predictor
+import util_highlight_payments
+import util_hide_payments
 
 app = Flask(__name__)
 CORS(app)
@@ -310,8 +312,8 @@ def hide():
     response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
 
-@app.route("/validator", methods=["POST"])
-def validator():
+@app.route("/validate", methods=["POST"])
+def validate():
     if "file" not in request.files:
         return "No file part", 400
 
@@ -338,12 +340,87 @@ def validator():
 
     util_data_validatior.get_validator()
 
-    filename = "data_validation.xlsx"
+    response = jsonify({"message": "Valiation Successful", "status": "success"})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
+
+@app.route("/validate", methods=["GET"])
+def get_validation():
+    filename = "data_validation.txt"
     pdf_path = os.path.join(app.config["HYGIENE_OUTPUTS"], filename)
 
     response = send_file(pdf_path, as_attachment=True, download_name=filename)
+
     return response
 
+@app.route("/highlight_payment", methods=["POST"])
+def highlight_payment():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify({"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_HIGHLIGHT"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_HIGHLIGHT"], file.filename))
+
+    output_folder_path = app.config["HIGHLIGHT_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    util_highlight_payments.highlight_payment_details()
+
+    pdf_filename = "highlighted_payment_and_numeric_values.pdf"
+    pdf_path = os.path.join(app.config["HIGHLIGHT_OUTPUTS"], pdf_filename)
+
+    response = send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
+    return response
+
+@app.route("/hide_payments", methods=["POST"])
+def hide_payments():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify({"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_HIDE"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_HIDE"], file.filename))
+
+    output_folder_path = app.config["HIDE_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    util_hide_payments.hide_payment_details()
+
+    filename = "modified_text.txt"
+    pdf_path = os.path.join(app.config["HIDE_OUTPUTS"], filename)
+
+    response = send_file(pdf_path, as_attachment=True, download_name=filename)
+    return response
 
 if __name__ == "__main__":
     util_classifier.load_saved_artifacts()
@@ -352,4 +429,5 @@ if __name__ == "__main__":
     util_hide.load_saved_artifacts()
     util_title_predictor.load_saved_artifacts()
     util_data_validatior.load_saved_artifacts()
+    util_highlight_payments.load_saved_artifacts()
     app.run(debug=True)
