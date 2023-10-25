@@ -99,8 +99,8 @@ def get_classifications():
     response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
 
-@app.route("/predictor", methods=["POST"])
-def title_predictor():
+@app.route("/job_title_predict", methods=["POST"])
+def job_title_predict():
     if "file" not in request.files:
         return "No file part", 400
 
@@ -131,7 +131,7 @@ def title_predictor():
     filename = "predicted_job_titles.xlsx"
     pdf_path = os.path.join(app.config["CLASSIFICATION_OUTPUTS"], filename)
 
-    response = send_file(pdf_path, as_attachment=True, download_name=filename)
+    response = pdf_path
     return response
 
 @app.route("/encrypt", methods=["POST"])
