@@ -464,14 +464,20 @@ def encrypt_payment():
 
     encrypted_txt, filepath = util_encryption_payments.encrypt_payment_details()
 
-    response = jsonify({
-        "message": "Encryption Successful",
-        "status": "Success",
-        "encrypted_text": encrypted_txt,
-        "filepath": filepath,
+    # response = jsonify({
+    #     "message": "Encryption Successful",
+    #     "status": "Success",
+    #     "encrypted_text": encrypted_txt,
+    #     "filepath": filepath,
+    #
+    # })
+    # response.headers.add("Access-Control-Allow-Origin", "*")
+    # return
 
-    })
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    filename = "encrypted_payment_details.txt"
+    file_path = os.path.join(app.config["ENCRYPTION_OUTPUTS"], filename)
+
+    response = send_file(file_path, as_attachment=True, download_name=filename)
     return response
 
 @app.route("/encrypt_payment", methods=["GET"])
@@ -509,11 +515,17 @@ def decrypt_payment():
 
     path = util_encryption_payments.decrypt_payment_details()
 
-    response = jsonify({
-        "message": "Decryption Successful",
-        "status": "Success",
-        "file_path": path,
-    })
+    # response = jsonify({
+    #     "message": "Decryption Successful",
+    #     "status": "Success",
+    #     "file_path": path,
+    # })
+    # return response
+
+    filename = "decrypted_payment_details.txt"
+    file_path = os.path.join(app.config["DECRYPTION_OUTPUTS"], filename)
+
+    response = send_file(file_path, as_attachment=True, download_name=filename)
     return response
 @app.route("/decrypt_payment", methods=["GET"])
 def get_decrypt_payment():
