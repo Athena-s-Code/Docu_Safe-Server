@@ -17,10 +17,9 @@ import util_encryption_payments
 
 app = Flask(__name__)
 CORS(app)
-
 CORS(
     app,
-    resources={r"*": {"origins": "http://localhost:3000"}},
+    resources={r"*": {"origins": ["http://localhost:3000", "https://develop--beautiful-pegasus-9a5f30.netlify.app/"]}},
 )
 
 FOLDER_CLASSIFICATION = "static/files/classification"
