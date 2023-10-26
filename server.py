@@ -13,6 +13,7 @@ import util_data_validatior
 import util_title_predictor
 import util_highlight_payments
 import util_hide_payments
+import util_encryption_payments
 
 app = Flask(__name__)
 CORS(app)
@@ -27,6 +28,7 @@ FOLDER_ENCRYPTION = "static/files/encryption"
 FOLDER_HIGHLIGHT = "static/files/highlight"
 FOLDER_HYGIENE = "static/files/hygeine"
 FOLDER_HIDE = "static/files/hide"
+FOLDER_DECRYPTION = "static/files/decryption"
 CLASSIFICATION_OUTPUTS = "static/outputs/classification"
 ENCRYPTION_OUTPUTS = "static/outputs/encryption"
 HIGHLIGHT_OUTPUTS = "static/outputs/highlights"
@@ -40,6 +42,7 @@ app.config["FOLDER_ENCRYPTION"] = FOLDER_ENCRYPTION
 app.config["FOLDER_HIGHLIGHT"] = FOLDER_HIGHLIGHT
 app.config["FOLDER_HYGIENE"] = FOLDER_HYGIENE
 app.config["FOLDER_HIDE"] = FOLDER_HIDE
+app.config["FOLDER_DECRYPTION"] = FOLDER_DECRYPTION
 app.config["CLASSIFICATION_OUTPUTS"] = CLASSIFICATION_OUTPUTS
 app.config["ENCRYPTION_OUTPUTS"] = ENCRYPTION_OUTPUTS
 app.config["HIGHLIGHT_OUTPUTS"] = HIGHLIGHT_OUTPUTS
@@ -400,7 +403,7 @@ def highlight_payment():
     response = send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
     return response
 
-@app.route("/hide_payments", methods=["POST"])
+@app.route("/hide_payment", methods=["POST"])
 def hide_payments():
     if "file" not in request.files:
         return "No file part", 400
@@ -434,6 +437,93 @@ def hide_payments():
     response = send_file(pdf_path, as_attachment=True, download_name=filename)
     return response
 
+@app.route("/encrypt_payment", methods=["POST"])
+def encrypt_payment():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify({"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_ENCRYPTION"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
+
+    output_folder_path = app.config["ENCRYPTION_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    encrypted_txt, filepath = util_encryption_payments.encrypt_payment_details()
+
+    response = jsonify({
+        "message": "Encryption Successful",
+        "status": "Success",
+        "encrypted_text": encrypted_txt,
+        "filepath": filepath,
+
+    })
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
+@app.route("/encrypt_payment", methods=["GET"])
+def get_encrypt_payment():
+    filename = "encrypted_payment_details.txt"
+    file_path = os.path.join(app.config["ENCRYPTION_OUTPUTS"], filename)
+
+    response = send_file(file_path, as_attachment=True, download_name=filename)
+    return response
+@app.route("/decrypt_payment", methods=["POST"])
+def decrypt_payment():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify({"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_DECRYPTION"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+
+    file.save(os.path.join(folder_path, file.filename))
+
+    output_folder_path = app.config["DECRYPTION_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    path = util_encryption_payments.decrypt_payment_details()
+
+    response = jsonify({
+        "message": "Decryption Successful",
+        "status": "Success",
+        "file_path": path,
+    })
+    return response
+@app.route("/decrypt_payment", methods=["GET"])
+def get_decrypt_payment():
+    filename = "decrypted_payment_details.txt"
+    file_path = os.path.join(app.config["DECRYPTION_OUTPUTS"], filename)
+
+    response = send_file(file_path, as_attachment=True, download_name=filename)
+    return response
+
 if __name__ == "__main__":
     util_classifier.load_saved_artifacts()
     util_encryption.load_saved_artifacts()
@@ -442,4 +532,5 @@ if __name__ == "__main__":
     util_title_predictor.load_saved_artifacts()
     util_data_validatior.load_saved_artifacts()
     util_highlight_payments.load_saved_artifacts()
+    util_encryption_payments.load_saved_artifacts()
     app.run(debug=True)
