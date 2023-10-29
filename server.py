@@ -14,6 +14,7 @@ import util_title_predictor
 import util_highlight_payments
 import util_hide_payments
 import util_encryption_payments
+import  util_encryption_wholefile
 
 app = Flask(__name__)
 CORS(app)
@@ -530,6 +531,74 @@ def decrypt_payment():
 @app.route("/decrypt_payment", methods=["GET"])
 def get_decrypt_payment():
     filename = "decrypted_payment_details.txt"
+    file_path = os.path.join(app.config["DECRYPTION_OUTPUTS"], filename)
+
+    response = send_file(file_path, as_attachment=True, download_name=filename)
+    return response
+
+@app.route("/encrypt_wholefile", methods=["POST"])
+def encrypt_whole_file():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify({"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_ENCRYPTION"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+
+    file.save(os.path.join(app.config["FOLDER_ENCRYPTION"], file.filename))
+
+    output_folder_path = app.config["ENCRYPTION_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    util_encryption_wholefile.encrypt_whole_file()
+
+    filename = "encrypted_details.txt"
+    file_path = os.path.join(app.config["ENCRYPTION_OUTPUTS"], filename)
+
+    response = send_file(file_path, as_attachment=True, download_name=filename)
+    return response
+
+@app.route("/decrypt_wholefile", methods=["POST"])
+def decrypt_whole_file():
+    if "file" not in request.files:
+        return "No file part", 400
+
+    file = request.files["file"]
+
+    if file.filename == "":
+        response = jsonify({"message": "No selected file", "status": "fail"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    folder_path = app.config["FOLDER_DECRYPTION"]
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    else:
+        clean_directory(folder_path)
+
+    file.save(os.path.join(folder_path, file.filename))
+
+    output_folder_path = app.config["DECRYPTION_OUTPUTS"]
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+    else:
+        clean_directory(output_folder_path)
+
+    util_encryption_wholefile.decrypt_whole_file()
+
+    filename = "decrypted_details.txt"
     file_path = os.path.join(app.config["DECRYPTION_OUTPUTS"], filename)
 
     response = send_file(file_path, as_attachment=True, download_name=filename)
