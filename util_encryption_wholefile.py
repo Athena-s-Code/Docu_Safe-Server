@@ -66,5 +66,5 @@ def decrypt_whole_file():
     print(f"Decrypted details saved to {output_decrypted_txt_path}")
 
 if __name__ == "__main__":
-    # encrypt_whole_file()
-    # decrypt_whole_file()
+    encrypt_whole_file()
+    decrypt_whole_file()
