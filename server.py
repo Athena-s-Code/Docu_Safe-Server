@@ -484,13 +484,6 @@ def encrypt_payment():
     response = send_file(file_path, as_attachment=True, download_name=filename)
     return response
 
-@app.route("/encrypt_payment", methods=["GET"])
-def get_encrypt_payment():
-    filename = "encrypted_payment_details.txt"
-    file_path = os.path.join(app.config["ENCRYPTION_OUTPUTS"], filename)
-
-    response = send_file(file_path, as_attachment=True, download_name=filename)
-    return response
 @app.route("/decrypt_payment", methods=["POST"])
 def decrypt_payment():
     if "file" not in request.files:
@@ -526,13 +519,6 @@ def decrypt_payment():
     # })
     # return response
 
-    filename = "decrypted_payment_details.txt"
-    file_path = os.path.join(app.config["DECRYPTION_OUTPUTS"], filename)
-
-    response = send_file(file_path, as_attachment=True, download_name=filename)
-    return response
-@app.route("/decrypt_payment", methods=["GET"])
-def get_decrypt_payment():
     filename = "decrypted_payment_details.txt"
     file_path = os.path.join(app.config["DECRYPTION_OUTPUTS"], filename)
 
