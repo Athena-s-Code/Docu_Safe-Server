@@ -1,0 +1,23 @@
+easyocr==1.7.0
+fitz==0.0.1.dev2
+Flask==2.2.2
+Flask_Cors==4.0.0
+fuzzywuzzy==0.18.0
+joblib==1.2.0
+nltk==3.7
+numpy==1.25.2
+pdfplumber==0.10.2
+Pillow==9.5.0
+pyDes==2.0.1
+pyDes==2.0.1
+PyPDF2==3.0.1
+pytesseract==0.3.10
+reportlab==4.0.4
+scikit_learn==1.2.2
+spacy==3.6.1
+torch==2.0.1
+transformers==4.32.1
+frontend==0.0.3
+tools==0.1.9
+PyMuPDF
+# python -m spacy download en_core_web_sm

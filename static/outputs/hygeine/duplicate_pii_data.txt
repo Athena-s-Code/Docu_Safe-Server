@@ -1,0 +1,181 @@
+Duplicated PII Data:
+PII Data: personal 
+information
+curriculum vitae
+fullnames
+ mike kisasatiwanaswa
+idcardno
+22859930
+postaladdress
+ po box 85575 80100mombasa
+telephoneno
+0717 550926
+emailaddress
+mikewanaswagmailco
+mlanguages
+ well spoken english and 
+swahilipurpose
+to put in use the latest inventions in telecommunication and information technology for a 
+positive impact
+in individuals business enterprises and corporate organizations
+work experience
+date
+april 2011  todate
+position
+fixed data networktechnician
+employer
+bens electronics services ltdmombasa
+duties
+ survey installation integration maintenance support and 
+decommissioning of fixed data services using various access
+technologies wimax fiber microwaves and wifi for 
+safaricomltd
+ survey installation and support of ceragons ip20 access technology for 
+airtel k
+ survey  installation and support of cambridge p2mp solutions for 
+safaricom
+ fiber optics splicing and terminations deployment support and 
+maintenance
+ wanlan design installation and technical support structured cabling
+ installation and support for cctv ip cameras biometrics security controls
+ installation and support for radwin p2p links and ceragon ptmplinks
+ installation and support for telrad wimax bts
+ wifi setup maintenance and support
+ e1 and sipvoip installation and support
+ systems integration on cisco hp and huawei platforms for 
+mpls p2pvpn and internet
+ fixed lte installation for safaricoms enterprise clients
+date
+september 2010  april2011
+position
+freelance computertechnician
+employer
+ self employed inmombasa
+duties
+ installation of software and hardware for pcs serversprinters
+ web design and website maintenance
+ repair of pcs printers scanners and other computer accessories
+ lanwan design installation and support
+date
+march 2010  august2010
+position
+scanning officersystemadministrator
+employer
+ interim independent electoralcommission
+duties
+ scanning of omr forms to extract data for thevoters
+ creation and maintenance of voters databaseregister
+ end user training and support on voter management system
+ mmc administration mail servers administration
+ network management  data recovery
+ repair and maintenance of scanner printers and computers
+date
+ january 2009  march2010
+position
+freelance computert e c h n i c i a n
+duties
+ installation of software and hardware for pcs serversprinters
+ repair of pcs printers scanners and other computer accessories
+ lanwan support
+educational background
+date
+ september 2007  december2008
+institution
+ inoorero university kenya school of professional 
+studies  nairobicourse
+ diploma in computer engineering system 
+administration and supportgrade
+credit
+date
+ feb 1997  november2000
+institution
+ bungoma high schoolbungoma
+grade
+kcse mean grade b m i n u s 
+date
+ jan 1989  december1996
+institution
+ bungoma deb primary schoolbungoma
+grade
+kcpe 444 out of 700marks
+professional trainings
+date
+ july2018
+institution
+ amirancommunications
+course
+ radwin installer  p2pp2mp
+grade
+distinction
+date
+ march2018
+institution
+ cambridge broadband networks kenyaltd
+course
+ vectarstarinstallation
+grade
+distinction
+date
+ jan2018
+institution
+ ceragonnetworks
+course
+ ceragon certified rollout professionalip20csen
+grade
+distinction
+date
+ june2017
+institution
+ e learning ruckus
+course
+ ruckus wireless certified associate  support engineerrwcasupe
+grade
+distinction
+date
+ jan 2017 to mar2017
+institution
+ iatmombasa
+course
+ccna
+grade
+distinction
+date
+ july2015
+institution
+ viscar industrial capacityltd
+course
+ fall arrest technicianwork atheight
+grade
+distinction
+note am in possession of a clean class bce
+driving licensereferees
+patrick odame
+regional election coordinator bungoma
+po box 2568 50200 
+bungoma phone no 0720 
+255 
+059snyodameyahoocou
+k
+cyrus soi
+projects manager bens electronics
+p o box 726  80100 
+mombasa phone 
+0710466547infobensele
+ctronicscoke
+christine owuor
+fixed access engineer 
+safaricom p o box 66827 
+00800 nairobi
+phone no 0724 360 530
+cowuorsafaricomcoke
+kelvin ongoro
+field engineersafaricom
+po box 66827 00800 
+nairobi phone 0724619 
+217kongorosafaricom
+coke
+
+Duplicated in Files:
+static/files/hygeine\highlighted - Copy (2).pdf, static/files/hygeine\highlighted - Copy.pdf, static/files/hygeine\highlighted.pdf
+========================================
+
