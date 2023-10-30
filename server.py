@@ -280,9 +280,12 @@ def highlight():
     pdf_filename = "highlighted.pdf"
     pdf_path = os.path.join(app.config["HIGHLIGHT_OUTPUTS"], pdf_filename)
 
-    response = send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
-    return response
+    try:
+        response = send_file(pdf_path, as_attachment=True, download_name=pdf_filename)
+    except FileNotFoundError:
+        response = send_file('static/temp/highlight_temp.pdf', as_attachment=True, download_name=pdf_filename)
 
+    return response
 
 @app.route("/hide", methods=["POST"])
 def hide():
