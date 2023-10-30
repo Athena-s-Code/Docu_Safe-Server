@@ -104,6 +104,6 @@ def load_saved_artifacts():
     print("loading saved artifacts...done")
 
 if __name__ == "__main__":
-    load_saved_artifacts()
-    txt, path = encrypt_payment_details()
-    decrypt_payment_details()
+    # load_saved_artifacts()
+    # txt, path = encrypt_payment_details()
+    # decrypt_payment_details()
